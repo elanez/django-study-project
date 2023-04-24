@@ -1,7 +1,9 @@
 from django import forms
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
-tasks = ["foo", "bar", "baz"]
+tasks = []
 
 class NewTaskForm(forms.Form):
     task = forms.CharField(label="New Task")
@@ -14,12 +16,12 @@ def index(request):
 
 def add(request):
     if request.method == "POST":
-        form = NewTaskForm(request.POST) # request.POST gets the value the user submitted
+        form = NewTaskForm(request.POST)
         if form.is_valid():
-            task = form.cleaned_data["task"] # access all the data user submitted
+            task = form.cleaned_data["task"] 
             tasks.append(task)
-        else:
-            # return the input back to the user
+            return HttpResponseRedirect(reverse("tasks:index"))
+        else: # if input is wrong, return the input back to the user
             return render(request, "tasks/add.html", {
                 "form": form
             })
